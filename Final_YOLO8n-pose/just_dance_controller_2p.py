@@ -1,18 +1,21 @@
-# just_dance_controller_2p.py
 """
-Strict 2-player Just Dance controller (v3.2)
-- Countdown with SOUND (same as 1P)
-- Pygame fullscreen with scaling (Option B)
-- Hotkeys: D (webcam skeleton), F (ref skeleton), S (both)
-- YOLO tracking ID lock
-- Seek-based reference video (perfect sync)
-- Pause-aware game clock
-- Post-dance scoring (no slow live scoring)
+Strict 2-player Just Dance controller (v3.6)
+
+✔ Single master timeline (same as 1P)
+✔ Async YOLO tracking (smooth sync feel)
+✔ Time-indexed angle capture (no drift)
+✔ ID-safe handling (no None crashes)
+✔ show_window compatible with 1P
+✔ D / F / S skeleton visibility toggles
+✔ Skeleton status UX text
+✔ Offline post-scoring only
 """
 
 import os
 import cv2
 import time
+import queue
+import threading
 import numpy as np
 import pygame
 from ultralytics import YOLO
@@ -20,7 +23,6 @@ from ultralytics import YOLO
 from videoPoseDetection import (
     precompute_video_angles,
     keypoints_to_angles,
-    ANGLE_TRIPLETS,
 )
 
 # =============================
@@ -33,9 +35,9 @@ COUNTDOWN_VIDEO_PATH = "videos/countdown.mp4"
 COUNTDOWN_SOUND_PATH = "songs_audio/countdown.mp3"
 
 MAX_MISSING_FRAMES = 15
-MAX_SCALE = 0.75        # fullscreen size scaling (0.50–0.90 recommended)
+MAX_SCALE = 0.75
 
-# COCO Skeleton
+# COCO skeleton
 FULL_BODY_PAIRS = [
     (0, 1), (1, 3),
     (0, 2), (2, 4),
@@ -48,31 +50,83 @@ FULL_BODY_PAIRS = [
     (12, 14), (14, 16),
 ]
 
-
 # =============================
 # DRAW SKELETON
 # =============================
 def draw_skeleton(frame, kpts, color):
-    if kpts is None:
+    if frame is None or kpts is None:
         return frame
-
     for x, y in kpts:
         if x == 0 and y == 0:
             continue
         cv2.circle(frame, (int(x), int(y)), 4, color, -1)
-
     for a, b in FULL_BODY_PAIRS:
         x1, y1 = kpts[a]
         x2, y2 = kpts[b]
         if (x1 == 0 and y1 == 0) or (x2 == 0 and y2 == 0):
             continue
         cv2.line(frame, (int(x1), int(y1)), (int(x2), int(y2)), color, 2)
-
     return frame
 
+# =============================
+# ASYNC YOLO THREAD
+# =============================
+class YOLOThread2P:
+    def __init__(self, model, conf=0.3):
+        self.model = model
+        self.conf = conf
+        self.q = queue.Queue(maxsize=1)
+        self.running = True
+
+        self.latest_kpts_all = None
+        self.latest_ids = None
+        self.latest_count = 0
+
+        self.t = threading.Thread(target=self._worker, daemon=True)
+        self.t.start()
+
+    def submit(self, frame):
+        if frame is None:
+            return
+        if self.q.full():
+            try:
+                _ = self.q.get_nowait()
+            except queue.Empty:
+                pass
+        self.q.put(frame)
+
+    def _worker(self):
+        while self.running:
+            try:
+                frame = self.q.get(timeout=0.1)
+            except queue.Empty:
+                continue
+
+            try:
+                results = self.model.track(
+                    frame, conf=self.conf, persist=True, verbose=False
+                )
+            except Exception:
+                continue
+
+            kpts_all, ids, count = None, None, 0
+            if results and results[0].keypoints is not None:
+                xy = results[0].keypoints.xy
+                if xy is not None and xy.numel() > 0:
+                    kpts_all = xy.cpu().numpy()
+                    count = kpts_all.shape[0]
+                if results[0].boxes is not None and results[0].boxes.id is not None:
+                    ids = results[0].boxes.id.cpu().numpy()
+
+            self.latest_kpts_all = kpts_all
+            self.latest_ids = ids
+            self.latest_count = count
+
+    def stop(self):
+        self.running = False
 
 # =============================
-# MAIN 2P CONTROLLER
+# MAIN CONTROLLER
 # =============================
 class JustDanceController2P:
     def __init__(
@@ -84,7 +138,6 @@ class JustDanceController2P:
         camera_index=0,
         countdown_video=COUNTDOWN_VIDEO_PATH,
     ):
-
         self.reference_video = reference_video
         self.audio_file = audio_file
         self.reference_angles_path = reference_angles_path
@@ -97,8 +150,8 @@ class JustDanceController2P:
         self.ref_angles = None
         self.ref_keypoints = None
 
-        self.angles_p1 = []
-        self.angles_p2 = []
+        self.angles_p1 = {}
+        self.angles_p2 = {}
 
         self.p1_id = None
         self.p2_id = None
@@ -109,332 +162,273 @@ class JustDanceController2P:
     # ======================================================
     def precompute_reference(self):
         if os.path.exists(self.reference_angles_path) and os.path.exists(self.reference_keypoints_path):
-            print("[2P] Loading reference npy…")
             self.ref_angles = np.load(self.reference_angles_path)
             self.ref_keypoints = np.load(self.reference_keypoints_path)
             return
 
-        print("[2P] Precomputing reference…")
         angles, kpts = precompute_video_angles(self.reference_video)
         self.ref_angles = angles
         self.ref_keypoints = kpts
         np.save(self.reference_angles_path, angles)
         np.save(self.reference_keypoints_path, kpts)
-        print("[2P] Saved reference files.")
 
     # ======================================================
-    # COUNTDOWN with SOUND
+    # COUNTDOWN
     # ======================================================
-    def play_countdown(self):
+    def play_countdown(self, show_window=True):
         played = False
-
         try:
             pygame.mixer.init()
             if os.path.exists(COUNTDOWN_SOUND_PATH):
                 pygame.mixer.music.load(COUNTDOWN_SOUND_PATH)
                 pygame.mixer.music.play()
                 played = True
-        except Exception as e:
-            print(f"[countdown] sound error: {e}")
+        except Exception:
+            pass
 
-        if not os.path.exists(self.countdown_video):
-            return
-
-        cap = cv2.VideoCapture(self.countdown_video)
-        while True:
-            ret, frame = cap.read()
-            if not ret:
-                break
-            cv2.imshow("Get Ready!", frame)
-            if cv2.waitKey(33) & 0xFF == ord("q"):
-                break
-
-        cap.release()
-        cv2.destroyWindow("Get Ready!")
+        if show_window and os.path.exists(self.countdown_video):
+            cap = cv2.VideoCapture(self.countdown_video)
+            while True:
+                ret, frame = cap.read()
+                if not ret:
+                    break
+                cv2.imshow("Get Ready!", frame)
+                if cv2.waitKey(33) & 0xFF == ord("q"):
+                    break
+            cap.release()
+            cv2.destroyWindow("Get Ready!")
 
         if played:
             pygame.mixer.music.stop()
 
     # ======================================================
-    # YOLO HELPERS
+    # PLAYER HELPERS
     # ======================================================
-    def _extract_people(self, results):
-        if len(results) == 0:
-            return None, None
-        r = results[0]
-        if r.keypoints is None:
-            return None, None
-
-        xy = r.keypoints.xy
-        if xy is None or xy.numel() == 0:
-            return None, None
-
-        kpts = xy.cpu().numpy()
-        ids = None
-        if r.boxes is not None and r.boxes.id is not None:
-            ids = r.boxes.id.cpu().numpy()
-        return kpts, ids
-
-    def _lock_ids(self, ids, kpts):
-        xs = kpts[:, :, 0].mean(axis=1)
-        left = int(np.argmin(xs))
-        right = int(np.argmax(xs))
-
-        self.p1_id = int(ids[left])
-        self.p2_id = int(ids[right])
+    def _lock_ids(self, ids, kpts_all):
+        xs = kpts_all[:, :, 0].mean(axis=1)
+        self.p1_id = int(ids[np.argmin(xs)])
+        self.p2_id = int(ids[np.argmax(xs)])
         self.missing_frames = 0
 
-        print(f"[2P] Locked P1={self.p1_id}, P2={self.p2_id}")
+    def _get_players(self, ids, kpts_all):
+        if ids is None or kpts_all is None:
+            return None, None, False
 
-    def _get_p1_p2(self, ids, kpts):
         p1 = p2 = None
-        for idx, pid in enumerate(ids):
+        for i, pid in enumerate(ids):
             if int(pid) == self.p1_id:
-                p1 = kpts[idx]
+                p1 = kpts_all[i]
             elif int(pid) == self.p2_id:
-                p2 = kpts[idx]
+                p2 = kpts_all[i]
         return p1, p2, (p1 is not None and p2 is not None)
 
     # ======================================================
-    # MAIN GAME
+    # MAIN GAME LOOP
     # ======================================================
     def run_game(self, show_window=True):
-
         self.precompute_reference()
-        self.play_countdown()
+        self.play_countdown(show_window)
 
-        # ---------------- Audio ----------------
-        pygame.mixer.init()
+        pygame.init()
+        try:
+            pygame.mixer.init()
+        except Exception:
+            pass
+
         has_audio = False
-        if os.path.exists(self.audio_file):
+        if self.audio_file and os.path.exists(self.audio_file):
             pygame.mixer.music.load(self.audio_file)
             pygame.mixer.music.play()
             pygame.mixer.music.pause()
             has_audio = True
 
-        # ---------------- Fullscreen UI ----------------
-        pygame.init()
-        screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
-        sw, sh = screen.get_size()
-        font = pygame.font.SysFont(None, 40)
+        screen = None
+        if show_window:
+            screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
+            sw, sh = screen.get_size()
+            font = pygame.font.SysFont(None, 36)
 
-        # ---------------- Video & Camera ----------------
         cam = cv2.VideoCapture(self.camera_index)
         ref = cv2.VideoCapture(self.reference_video)
 
         fps = ref.get(cv2.CAP_PROP_FPS) or 30.0
-        vf = int(ref.get(cv2.CAP_PROP_FRAME_COUNT))
-        rf = self.ref_keypoints.shape[0]
-        af = self.ref_angles.shape[0]
+        num_frames = min(
+            int(ref.get(cv2.CAP_PROP_FRAME_COUNT)),
+            len(self.ref_angles),
+            len(self.ref_keypoints),
+        )
 
-        num_frames = min(vf, rf, af)
+        yolo = YOLOThread2P(self.model)
 
-        # ---------------- Timeline ----------------
         game_time = 0.0
         last_time = time.time()
-        end_hold = 0.0
         paused = True
         status = "Waiting for 2 players…"
+        end_hold = 0.0
 
-        hide_cam = False
-        hide_ref = False
+        hide_cam_skel = True
+        hide_ref_skel = True
 
         last_ref_frame = None
         running = True
 
-        # ======================================================
-        # GAME LOOP
-        # ======================================================
         while running:
-
-            # ---------- Pygame Events ----------
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    running = False
-
-                elif event.type == pygame.KEYDOWN:
-                    if event.key in (pygame.K_ESCAPE, pygame.K_q):
+            # ---------- Events ----------
+            if show_window:
+                for event in pygame.event.get():
+                    if event.type == pygame.QUIT:
                         running = False
-                    elif event.key == pygame.K_d:
-                        hide_cam = not hide_cam
-                    elif event.key == pygame.K_f:
-                        hide_ref = not hide_ref
-                    elif event.key == pygame.K_s:
-                        both = hide_cam and hide_ref
-                        hide_cam = not both
-                        hide_ref = not both
+                    elif event.type == pygame.KEYDOWN:
+                        if event.key in (pygame.K_ESCAPE, pygame.K_q):
+                            running = False
+                        elif event.key == pygame.K_d:
+                            hide_cam_skel = not hide_cam_skel
+                        elif event.key == pygame.K_f:
+                            hide_ref_skel = not hide_ref_skel
+                        elif event.key == pygame.K_s:
+                            both = hide_cam_skel and hide_ref_skel
+                            hide_cam_skel = not both
+                            hide_ref_skel = not both
 
-            # ---------- Δ Time ----------
             now = time.time()
             dt = now - last_time
             last_time = now
 
-            # ---------- Read Webcam ----------
             ok, cam_frame = cam.read()
             if not ok:
                 break
             cam_frame = cv2.flip(cam_frame, 1)
 
-            # ---------- YOLO Tracking ----------
-            results = self.model.track(cam_frame, conf=0.3, persist=True, verbose=False)
-            kpts_all, ids = self._extract_people(results)
-            count = 0 if kpts_all is None else kpts_all.shape[0]
+            yolo.submit(cam_frame)
 
-            # ---------- Lock IDs ----------
+            kpts_all = yolo.latest_kpts_all
+            ids = yolo.latest_ids
+            count = yolo.latest_count or 0
+
             if self.p1_id is None or self.p2_id is None:
                 paused = True
-                if has_audio: pygame.mixer.music.pause()
-
+                if has_audio:
+                    pygame.mixer.music.pause()
                 if count == 2 and ids is not None:
                     self._lock_ids(ids, kpts_all)
-                    status = "Locking players…"
+                    status = "Players locked"
                 else:
-                    status = "Need exactly 2 players"
-                both = False
+                    status = "Need 2 players + tracking IDs"
                 p1 = p2 = None
-
+                both_players = False
             else:
-                p1, p2, both = self._get_p1_p2(ids, kpts_all)
-
-                if both and count == 2:
-                    self.missing_frames = 0
-                    if paused:
-                        paused = False
-                        if has_audio: pygame.mixer.music.unpause()
+                p1, p2, both_players = self._get_players(ids, kpts_all)
+                if both_players and count == 2:
+                    paused = False
+                    if has_audio:
+                        pygame.mixer.music.unpause()
                     status = "Dancing!"
+                    self.missing_frames = 0
                 else:
                     paused = True
-                    if has_audio: pygame.mixer.music.pause()
-
+                    if has_audio:
+                        pygame.mixer.music.pause()
                     self.missing_frames += 1
+                    status = "Players unstable — stand side-by-side"
                     if self.missing_frames > MAX_MISSING_FRAMES:
-                        print("[2P] Re-locking IDs")
-                        self.p1_id = None
-                        self.p2_id = None
+                        self.p1_id = self.p2_id = None
                         self.missing_frames = 0
-                    status = "Players not stable — stand side-by-side"
 
-            # ---------- Advance timeline ----------
-            if both and not paused:
+            if not paused:
                 game_time += dt
 
             dance_idx = int(game_time * fps)
             dance_idx = max(0, min(dance_idx, num_frames - 1))
 
-            # ---------- Check End ----------
             if dance_idx >= num_frames - 1:
                 end_hold += dt
-                if end_hold > 2:
-                    print("[2P] Finished song.")
+                if end_hold > 2.0:
                     running = False
             else:
-                end_hold = 0
+                end_hold = 0.0
 
-            # ---------- Seek reference ----------
             ref.set(cv2.CAP_PROP_POS_FRAMES, dance_idx)
-            ret_ref, ref_frame = ref.read()
-            if not ret_ref:
-                ref_frame = last_ref_frame
-            else:
+            ok_ref, ref_frame = ref.read()
+            if ok_ref:
                 last_ref_frame = ref_frame
+            else:
+                ref_frame = last_ref_frame
+                if ref_frame is None:
+                    break
 
-            if not hide_ref:
-                ref_frame = draw_skeleton(ref_frame.copy(), self.ref_keypoints[dance_idx], (0, 0, 255))
+            if both_players and not paused:
+                self.angles_p1[dance_idx] = keypoints_to_angles(p1)
+                self.angles_p2[dance_idx] = keypoints_to_angles(p2)
 
-            # ---------- Webcam skeleton + angles ----------
-            cam_draw = cam_frame.copy()
-            if both and not paused:
-                if not hide_cam:
+            if show_window:
+                # reference draw
+                if hide_ref_skel:
+                    ref_draw = ref_frame.copy()
+                else:
+                    ref_draw = draw_skeleton(
+                        ref_frame.copy(),
+                        self.ref_keypoints[dance_idx],
+                        (0, 0, 255),
+                    )
+
+                cam_draw = cam_frame.copy()
+                if both_players and not hide_cam_skel:
                     cam_draw = draw_skeleton(cam_draw, p1, (0, 255, 0))
                     cam_draw = draw_skeleton(cam_draw, p2, (0, 255, 255))
 
-                self.angles_p1.append(keypoints_to_angles(p1))
-                self.angles_p2.append(keypoints_to_angles(p2))
+                h = 480
+                r1 = cv2.resize(ref_draw, (int(ref_draw.shape[1] * h / ref_draw.shape[0]), h))
+                r2 = cv2.resize(cam_draw, (int(cam_draw.shape[1] * h / cam_draw.shape[0]), h))
+                combo = np.hstack((r1, r2))
 
-            # ---------- Compose UI ----------
-            h = 480
-            r1 = cv2.resize(ref_frame, (int(ref_frame.shape[1] * h / ref_frame.shape[0]), h))
-            r2 = cv2.resize(cam_draw, (int(cam_draw.shape[1] * h / cam_draw.shape[0]), h))
-            combo = np.hstack((r1, r2))
+                ch, cw = combo.shape[:2]
+                scale = min(sw / cw, sh / ch, MAX_SCALE)
+                combo = cv2.resize(combo, (int(cw * scale), int(ch * scale)))
 
-            ch, cw = combo.shape[:2]
-            scale = min(sw / cw, sh / ch)
-            scale = min(scale, MAX_SCALE)
+                rgb = cv2.cvtColor(combo, cv2.COLOR_BGR2RGB)
+                surf = pygame.image.frombuffer(rgb.tobytes(), combo.shape[1::-1], "RGB")
 
-            nw, nh = int(cw * scale), int(ch * scale)
-            combo_resized = cv2.resize(combo, (nw, nh))
+                screen.fill((0, 0, 0))
+                screen.blit(surf, ((sw - combo.shape[1]) // 2, (sh - combo.shape[0]) // 2))
 
-            rgb = cv2.cvtColor(combo_resized, cv2.COLOR_BGR2RGB)
-            surf = pygame.image.frombuffer(rgb.tobytes(), (nw, nh), "RGB")
+                icon = "🟢 Skeletons ON"
+                if hide_cam_skel and hide_ref_skel:
+                    icon = "🔴 ALL OFF"
+                elif hide_cam_skel:
+                    icon = "🟡 Webcam OFF"
+                elif hide_ref_skel:
+                    icon = "🔵 Reference OFF"
 
-            screen.fill((0, 0, 0))
-            screen.blit(surf, ((sw - nw)//2, (sh - nh)//2))
+                screen.blit(font.render(status, True, (255, 255, 0)), (40, 40))
+                screen.blit(font.render(icon, True, (255, 255, 255)), (40, 80))
+                pygame.display.flip()
 
-            txt = font.render(status, True, (255, 255, 0))
-            screen.blit(txt, (40, 40))
-            pygame.display.flip()
-
-        # ======================================================
-        # CLEANUP
-        # ======================================================
+        yolo.stop()
         cam.release()
         ref.release()
-        pygame.mixer.music.stop()
+        if has_audio:
+            pygame.mixer.music.stop()
         pygame.quit()
 
-        # ======================================================
-        # POST-SCORING
-        # ======================================================
-        if len(self.angles_p1) == 0:
-            return 0.0, 0.0
+        return self._final_scores()
 
-        p1 = np.stack(self.angles_p1)
-        p2 = np.stack(self.angles_p2)
+    # ======================================================
+    # SCORING
+    # ======================================================
+    def _score_from_dict(self, angle_dict):
+        if not angle_dict:
+            return 0.0
+        idxs = np.array(sorted(angle_dict.keys()), dtype=np.int32)
+        player = np.stack([angle_dict[i] for i in idxs], axis=0)
+        ref = self.ref_angles[idxs]
+        diff = np.abs(ref - player)
+        sim = np.clip(1.0 - diff / ANGLE_TOLERANCE, 0.0, 1.0)
+        return float(sim.mean() * 100.0)
 
-        final_p1 = self._score_series(p1)
-        final_p2 = self._score_series(p2)
-
+    def _final_scores(self):
+        p1 = self._score_from_dict(self.angles_p1)
+        p2 = self._score_from_dict(self.angles_p2)
         print("\n====== FINAL SCORES ======")
-        print(f"Player 1: {final_p1:.2f}")
-        print(f"Player 2: {final_p2:.2f}")
-
-        return final_p1, final_p2
-
-    # ============================
-    # SERIES SCORING
-    # ============================
-    def _score_series(self, player):
-        T = min(player.shape[0], self.ref_angles.shape[0])
-        ref = self.ref_angles[:T]
-        pl = player[:T]
-        scores = []
-
-        for j in range(ref.shape[1]):
-            diff = np.abs(ref[:, j] - pl[:, j])
-            sim = np.clip(1 - diff / ANGLE_TOLERANCE, 0, 1)
-            scores.append(sim.mean() * 100)
-
-        return float(np.mean(scores))
-
-
-# =============================
-# CLI ENTRY
-# =============================
-if __name__ == "__main__":
-    import argparse
-    p = argparse.ArgumentParser()
-    p.add_argument("--video", required=True)
-    p.add_argument("--audio", default="")
-    p.add_argument("--angles", default="")
-    p.add_argument("--keypoints", default="")
-    p.add_argument("--camera", type=int, default=0)
-    args = p.parse_args()
-
-    ctrl = JustDanceController2P(
-        reference_video=args.video,
-        audio_file=args.audio,
-        reference_angles_path=args.angles,
-        reference_keypoints_path=args.keypoints,
-        camera_index=args.camera,
-    )
-    ctrl.run_game()
+        print(f"Player 1: {p1:.2f}")
+        print(f"Player 2: {p2:.2f}")
+        return p1, p2
