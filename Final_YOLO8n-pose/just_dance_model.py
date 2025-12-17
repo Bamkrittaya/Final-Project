@@ -1,0 +1,287 @@
+"""
+Set 'JustDanceModel' class for the application
+"""
+import cv2
+import tensorflow as tf
+import numpy as np
+
+
+class JustDanceModel:
+    """
+    A class to represent the model for the application
+
+      Attributes:
+          model_path (object): An object representing the model path
+
+       Methods:
+           __init__: Initialize the JustDanceModel class
+           run_interface: Process a frame and return key points
+           calculate_angles: Calculate angles between specified joints
+           store_angles: Store all angles between triplets of joints
+           score_calculator: Calculate a user's score based on
+               the accuracy to the video
+           final_score: Return the final score for the user
+
+
+    """
+
+    def __init__(self, model_path):
+        """
+        Initialize a new instance of the JustDanceModel class
+
+        Sets up the interpreter for the TensorFlow library to
+        interpret our data into key points, according to the
+        defined machine learning model
+
+        Args:
+            model_path(object): An object representing
+                the model path to call for the TensorFlow model
+                used in the application
+        """
+        self.model_path = model_path
+        self.interpreter = tf.lite.Interpreter(model_path=self.model_path)
+        self.interpreter.allocate_tensors()
+        # Added to fix issue with getting input and output details multiple times
+        self.input_details = self.interpreter.get_input_details()
+        self.output_details = self.interpreter.get_output_details()
+        self.input_shape = self.input_details[0]['shape']
+
+    def run_inference(self, input_image):
+        """
+        Format and run the TensorFlow model on an input image
+
+        Return the joint key points with accuracy scores
+
+        Args:
+            input_image: A frame of video or an image, represented
+                as an float32 tensor of shape: 192x192x3
+        """
+        input_image = tf.cast(input_image, dtype=tf.float32)
+
+        input_details = self.interpreter.get_input_details()
+        output_details = self.interpreter.get_output_details()
+
+        self.interpreter.set_tensor(
+            input_details[0]["index"], input_image.numpy()
+        )
+        self.interpreter.invoke()
+
+        key_points_with_scores = self.interpreter.get_tensor(
+            output_details[0]["index"]
+        )
+
+        return key_points_with_scores
+    
+    def extract_keypoints(self, frame):
+        """
+        Wrapper for run_inference that preprocesses a raw frame (BGR image)
+        and returns the keypoints array shaped (17,3).
+        """
+
+        # Resize and normalize frame to match model input
+        h, w = self.input_shape[1], self.input_shape[2]
+        img = cv2.resize(frame, (w, h))
+        img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+        img = np.expand_dims(img.astype(np.float32) / 255.0, axis=0)
+
+        # Run inference
+        keypoints_with_scores = self.run_inference(tf.convert_to_tensor(img))
+
+        # Reshape output into (17,3)
+        keypoints = keypoints_with_scores.reshape(-1, 17, 3)[0]
+        return keypoints
+
+
+    @staticmethod
+    def calculate_angle(
+        frame, key_points, start_index, middle_index, end_index
+    ):
+        """
+        Calculate the angle between three joints using trigonometry
+
+        Args:
+            frame: A dictionary of data from a single frame of a video feed
+            key_points: A dictionary of coordinates of the user's
+                joint key points
+            start_index: An integer representing the index of the user's
+                start joint
+            middle_index: An integer representing the index of the user's
+                middle joint
+            end_index: An integer representing the index of the user's
+                end joint
+
+        Return
+            A float representing the angle between three joints.
+        """
+        y_coordinate, x_coordinate, _ = frame.shape
+        shaped = np.squeeze(
+            np.multiply(key_points, [y_coordinate, x_coordinate, 1])
+        )
+
+        joint_start = np.array(
+            [int(shaped[start_index][0]), int(shaped[start_index][1])]
+        )
+        joint_middle = np.array(
+            [int(shaped[middle_index][0]), int(shaped[middle_index][1])]
+        )
+        joint_end = np.array(
+            [int(shaped[end_index][0]), int(shaped[end_index][1])]
+        )
+
+        radians = np.arctan2(
+            joint_end[1] - joint_middle[1], joint_end[0] - joint_middle[0]
+        ) - np.arctan2(
+            joint_start[1] - joint_middle[1], joint_start[0] - joint_middle[0]
+        )
+        angle = np.abs(radians * 180.0 / np.pi)
+
+        if angle > 180.0:
+            angle = 360 - angle
+
+        return angle
+
+    @staticmethod
+    def store_angles(all_joint_angles, frame, key_points):
+        """
+        Store all angles between triplets of joints
+
+        Args:
+            all_joint_angles: A dictionary representing all the calculated
+                angles between a set of joints
+            frame: A dictionary of data representing a single frame
+                of a video feed
+            key_points: A dictionary of coordinates of the user's
+                joint key points
+
+        """
+        all_joint_angles["left_arm"].append(
+            JustDanceModel.calculate_angle(frame, key_points, 5, 7, 9)
+        )
+        all_joint_angles["right_arm"].append(
+            JustDanceModel.calculate_angle(frame, key_points, 6, 8, 10)
+        )
+        all_joint_angles["left_elbow"].append(
+            JustDanceModel.calculate_angle(frame, key_points, 7, 5, 11)
+        )
+        all_joint_angles["right_elbow"].append(
+            JustDanceModel.calculate_angle(frame, key_points, 8, 6, 12)
+        )
+        all_joint_angles["left_thigh"].append(
+            JustDanceModel.calculate_angle(frame, key_points, 12, 11, 13)
+        )
+        all_joint_angles["right_thigh"].append(
+            JustDanceModel.calculate_angle(frame, key_points, 11, 12, 14)
+        )
+        all_joint_angles["left_leg"].append(
+            JustDanceModel.calculate_angle(frame, key_points, 11, 13, 15)
+        )
+        all_joint_angles["right_leg"].append(
+            JustDanceModel.calculate_angle(frame, key_points, 12, 14, 16)
+        )
+
+    @staticmethod
+    def score_calculator(angle_video, angle_camera, threshold):
+        """
+        Return a score based on how accurate the user's moves are
+        compared to the video
+
+        Args:
+            angle_video: A list of angles for a joint in the input video
+            angle_camera: A list of angles for a joint in the user camera video
+            threshold: An integer representing the threshold angle difference
+
+        Return:
+            An integer representing the user's score based on the accuracy
+            between the user's move and the video
+        """
+        accuracy_count = []
+        video_array = np.array(angle_video)
+        camera_array = np.array(angle_camera)
+
+        angle_difference = (abs(video_array - camera_array)).tolist()
+
+        for difference in angle_difference:
+            if difference < threshold:
+                accuracy_count.append(1)
+
+        score = int((sum(accuracy_count) / len(angle_difference)) * 100)
+
+        return score
+
+    @staticmethod
+    def final_score(all_angles_video, all_angles_camera, threshold):
+        """
+        Return a final score based on all the calculated scores for angles
+
+        Args:
+            all_angles_video: A dictionary representing all the calculated
+                angles between a set of joints from a dance video
+            all_angles_camera: A dictionary representing all the calculated
+                angles between a set of joints from the user's camera feed
+            threshold: An integer representing the score determining up to
+                how much counts as being the "correct move" for a
+                valid score point
+
+
+        """
+        all_scores = []
+
+        joints = [
+            "left_arm",
+            "right_arm",
+            "left_elbow",
+            "right_elbow",
+            "left_thigh",
+            "right_thigh",
+            "left_leg",
+            "right_leg",
+        ]
+
+        for joint in joints:
+            all_scores.append(
+                JustDanceModel.score_calculator(
+                    all_angles_video[joint], all_angles_camera[joint], threshold
+                )
+            )
+
+        final_score = np.mean(all_scores)
+
+        final_score += 20
+
+        if final_score > 100:
+            final_score = 100
+
+        return final_score
+    
+    @staticmethod
+    def draw_keypoints(frame, keypoints, confidence_threshold=0.3):
+        """
+        Draw detected keypoints and skeleton connections on a frame.
+        Args:
+            frame (np.ndarray): Input BGR frame.
+            keypoints (np.ndarray): (17,3) array with [x, y, confidence].
+            confidence_threshold (float): Minimum confidence to draw.
+        """
+        import cv2
+
+        # Standard 17-keypoint COCO skeleton pairs
+        connections = [
+            (0, 1), (1, 2), (2, 3), (3, 4),        # right arm
+            (0, 5), (5, 6), (6, 7), (7, 8),        # left arm
+            (5, 11), (6, 12), (11, 12),            # torso
+            (11, 13), (13, 15), (12, 14), (14, 16) # legs
+        ]
+
+        h, w, _ = frame.shape
+        for (x, y, c) in keypoints:
+            if c > confidence_threshold:
+                cv2.circle(frame, (int(x * w), int(y * h)), 4, (0, 255, 0), -1)
+
+        for a, b in connections:
+            if keypoints[a][2] > confidence_threshold and keypoints[b][2] > confidence_threshold:
+                x1, y1 = int(keypoints[a][0] * w), int(keypoints[a][1] * h)
+                x2, y2 = int(keypoints[b][0] * w), int(keypoints[b][1] * h)
+                cv2.line(frame, (x1, y1), (x2, y2), (255, 0, 0), 2)
+
+        return frame
+

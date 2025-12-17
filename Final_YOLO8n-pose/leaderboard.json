@@ -1,0 +1,794 @@
+[
+  {
+    "player": "Player 1",
+    "song": "wetthebed.mp4",
+    "score": 71.00036044915517,
+    "timestamp": "2025-12-08 00:42:49"
+  },
+  {
+    "player": "Player 1 (P1)",
+    "song": "callmemaybe.mp4",
+    "score": 69.96641278266907,
+    "timestamp": "2025-11-22 23:31:09"
+  },
+  {
+    "player": "Player 1",
+    "song": "cheapthrills.mp4",
+    "score": 67.71704494953156,
+    "timestamp": "2025-12-12 23:36:28"
+  },
+  {
+    "player": "Player 1",
+    "song": "cheapthrills.mp4",
+    "score": 67.61386771996816,
+    "timestamp": "2025-12-12 23:15:08"
+  },
+  {
+    "player": "Player 1",
+    "song": "cheapthrills.mp4",
+    "score": 67.24067072073619,
+    "timestamp": "2025-12-12 22:36:38"
+  },
+  {
+    "player": "b (P1)",
+    "song": "callmemaybe.mp4",
+    "score": 67.18741754690807,
+    "timestamp": "2025-11-24 16:45:49"
+  },
+  {
+    "player": "Player 1",
+    "song": "cheapthrills.mp4",
+    "score": 67.01669315497081,
+    "timestamp": "2025-12-12 23:26:19"
+  },
+  {
+    "player": "y",
+    "song": "cheapthrills.mp4",
+    "score": 65.27154843012492,
+    "timestamp": "2025-11-22 15:12:50"
+  },
+  {
+    "player": "Player 1",
+    "song": "callmemaybe.mp4",
+    "score": 64.65467532475789,
+    "timestamp": "2025-11-22 23:40:41"
+  },
+  {
+    "player": "Player 1",
+    "song": "wetthebed.mp4",
+    "score": 63.10165246327718,
+    "timestamp": "2025-12-08 00:41:17"
+  },
+  {
+    "player": "i",
+    "song": "cheapthrills.mp4",
+    "score": 62.19677031040192,
+    "timestamp": "2025-11-22 15:28:31"
+  },
+  {
+    "player": "Player 1",
+    "song": "miniskirt.mp4",
+    "score": 61.35197103023529,
+    "timestamp": "2025-12-08 22:05:28"
+  },
+  {
+    "player": "Player 1",
+    "song": "miniskirt.mp4",
+    "score": 61.101355950037636,
+    "timestamp": "2025-12-08 22:07:58"
+  },
+  {
+    "player": "Player 1",
+    "song": "wetthebed.mp4",
+    "score": 60.876320799191795,
+    "timestamp": "2025-12-08 00:38:29"
+  },
+  {
+    "player": "Player 1",
+    "song": "miniskirt.mp4",
+    "score": 60.419559478759766,
+    "timestamp": "2025-12-08 00:46:22"
+  },
+  {
+    "player": "r",
+    "song": "cheapthrills.mp4",
+    "score": 59.985767006874084,
+    "timestamp": "2025-11-22 22:38:03"
+  },
+  {
+    "player": "Player 1",
+    "song": "miniskirt.mp4",
+    "score": 59.1680109500885,
+    "timestamp": "2025-12-08 22:07:00"
+  },
+  {
+    "player": "Player 1",
+    "song": "miniskirt.mp4",
+    "score": 59.114742477734886,
+    "timestamp": "2025-12-08 22:04:43"
+  },
+  {
+    "player": "Player 1",
+    "song": "miniskirt.mp4",
+    "score": 58.74052623907725,
+    "timestamp": "2025-12-08 22:06:16"
+  },
+  {
+    "player": "Player 1 (P1)",
+    "song": "undertheinfluence.mp4",
+    "score": 57.62447650233904,
+    "timestamp": "2025-12-09 01:20:28"
+  },
+  {
+    "player": "v (P2)",
+    "song": "callmemaybe.mp4",
+    "score": 54.97315665086111,
+    "timestamp": "2025-11-24 16:45:49"
+  },
+  {
+    "player": "Player 1",
+    "song": "wetthebed.mp4",
+    "score": 53.949135541915894,
+    "timestamp": "2025-12-08 00:36:11"
+  },
+  {
+    "player": "Player 1 (P1)",
+    "song": "undertheinfluence.mp4",
+    "score": 53.314964696764946,
+    "timestamp": "2025-12-09 01:29:44"
+  },
+  {
+    "player": "Player 1",
+    "song": "layitdown1.mp4",
+    "score": 51.787980726609625,
+    "timestamp": "2025-12-08 14:50:19"
+  },
+  {
+    "player": "c (P1)",
+    "song": "callmemaybe.mp4",
+    "score": 51.746205389499664,
+    "timestamp": "2025-11-24 21:38:41"
+  },
+  {
+    "player": "Player 1",
+    "song": "layitdown.mp4",
+    "score": 51.07735718290011,
+    "timestamp": "2025-12-08 14:49:48"
+  },
+  {
+    "player": "Player 1 (P1)",
+    "song": "cheapthrills.mp4",
+    "score": 50.25628517692288,
+    "timestamp": "2025-11-24 19:31:58"
+  },
+  {
+    "player": "Player 1",
+    "song": "wetthebed.mp4",
+    "score": 49.60890541474024,
+    "timestamp": "2025-12-08 15:10:28"
+  },
+  {
+    "player": "Player 1",
+    "song": "layitdown1.mp4",
+    "score": 48.97568647904942,
+    "timestamp": "2025-12-08 14:38:48"
+  },
+  {
+    "player": "Player 1",
+    "song": "wetthebed.mp4",
+    "score": 48.35514725496372,
+    "timestamp": "2025-12-08 15:01:04"
+  },
+  {
+    "player": "Player 1",
+    "song": "layitdown.mp4",
+    "score": 47.51218857554098,
+    "timestamp": "2025-12-08 14:47:11"
+  },
+  {
+    "player": "Player 1",
+    "song": "miniskirt.mp4",
+    "score": 47.35046895841757,
+    "timestamp": "2025-12-08 21:57:53"
+  },
+  {
+    "player": "Player 1",
+    "song": "layitdown1.mp4",
+    "score": 46.66285174588362,
+    "timestamp": "2025-12-08 14:47:51"
+  },
+  {
+    "player": "Player 2 (P2)",
+    "song": "callmemaybe.mp4",
+    "score": 45.76460493107637,
+    "timestamp": "2025-11-22 23:31:09"
+  },
+  {
+    "player": "Player 1",
+    "song": "miniskirt.mp4",
+    "score": 45.197797318299614,
+    "timestamp": "2025-12-08 00:33:18"
+  },
+  {
+    "player": "Player 1",
+    "song": "miniskirt.mp4",
+    "score": 44.701911732554436,
+    "timestamp": "2025-12-08 15:09:19"
+  },
+  {
+    "player": "v",
+    "song": "cheapthrills.mp4",
+    "score": 44.17143501341343,
+    "timestamp": "2025-11-21 23:08:43"
+  },
+  {
+    "player": "Player 1 (P1)",
+    "song": "undertheinfluence.mp4",
+    "score": 43.76578842600187,
+    "timestamp": "2025-12-09 01:46:47"
+  },
+  {
+    "player": "Player 1",
+    "song": "undertheinfluence.mp4",
+    "score": 42.85611838102341,
+    "timestamp": "2025-12-08 14:48:40"
+  },
+  {
+    "player": "Player 1",
+    "song": "miniskirt.mp4",
+    "score": 42.84395759304365,
+    "timestamp": "2025-12-08 15:08:39"
+  },
+  {
+    "player": "Player 1",
+    "song": "oneofthegirls.mp4",
+    "score": 42.77711103359858,
+    "timestamp": "2025-12-08 15:12:09"
+  },
+  {
+    "player": "Player 2 (P2)",
+    "song": "undertheinfluence.mp4",
+    "score": 42.643689711888634,
+    "timestamp": "2025-12-09 01:20:28"
+  },
+  {
+    "player": "Player 1",
+    "song": "oldtownroad.mp4",
+    "score": 42.201586117347084,
+    "timestamp": "2025-12-07 23:51:27"
+  },
+  {
+    "player": "Player 1",
+    "song": "undertheinfluence.mp4",
+    "score": 41.037079164137445,
+    "timestamp": "2025-12-08 00:03:55"
+  },
+  {
+    "player": "Player 1",
+    "song": "cheapthrills.mp4",
+    "score": 40.7022862136364,
+    "timestamp": "2025-12-17 18:08:35"
+  },
+  {
+    "player": "Player 1",
+    "song": "miniskirt.mp4",
+    "score": 40.69302961230278,
+    "timestamp": "2025-12-08 14:28:37"
+  },
+  {
+    "player": "Player 2 (P2)",
+    "song": "callmemaybe.mp4",
+    "score": 40.39685599505901,
+    "timestamp": "2025-11-25 10:23:46"
+  },
+  {
+    "player": "Player 1",
+    "song": "undertheinfluence.mp4",
+    "score": 40.13729349399606,
+    "timestamp": "2025-12-08 23:39:14"
+  },
+  {
+    "player": "Player 1",
+    "song": "miniskirt.mp4",
+    "score": 39.404035260279976,
+    "timestamp": "2025-12-08 21:56:50"
+  },
+  {
+    "player": "Player 1",
+    "song": "miniskirt.mp4",
+    "score": 39.38237910469373,
+    "timestamp": "2025-12-08 17:06:34"
+  },
+  {
+    "player": "Player 1",
+    "song": "wetthebed.mp4",
+    "score": 39.32492980112632,
+    "timestamp": "2025-12-09 00:39:30"
+  },
+  {
+    "player": "co (P2)",
+    "song": "callmemaybe.mp4",
+    "score": 38.62960688769817,
+    "timestamp": "2025-11-24 21:38:41"
+  },
+  {
+    "player": "Player 2 (P2)",
+    "song": "cheapthrills.mp4",
+    "score": 38.54417340209087,
+    "timestamp": "2025-11-24 19:31:58"
+  },
+  {
+    "player": "Player 1 (P1)",
+    "song": "callmemaybe.mp4",
+    "score": 38.29421658689777,
+    "timestamp": "2025-11-25 10:23:46"
+  },
+  {
+    "player": "Player 1",
+    "song": "undertheinfluence.mp4",
+    "score": 37.27206880847613,
+    "timestamp": "2025-12-09 01:09:21"
+  },
+  {
+    "player": "Player 1",
+    "song": "undertheinfluence.mp4",
+    "score": 36.97783490177244,
+    "timestamp": "2025-12-09 01:47:10"
+  },
+  {
+    "player": "Player 1",
+    "song": "miniskirt.mp4",
+    "score": 36.75195177396139,
+    "timestamp": "2025-12-08 14:26:21"
+  },
+  {
+    "player": "Player 1",
+    "song": "oldtownroad.mp4",
+    "score": 36.53747981258979,
+    "timestamp": "2025-12-08 00:01:23"
+  },
+  {
+    "player": "Player 1",
+    "song": "miniskirt.mp4",
+    "score": 36.499538818995156,
+    "timestamp": "2025-12-08 14:25:17"
+  },
+  {
+    "player": "b",
+    "song": "cheapthrills.mp4",
+    "score": 36.014384031295776,
+    "timestamp": "2025-11-21 23:54:39"
+  },
+  {
+    "player": "Player 1",
+    "song": "miniskirt.mp4",
+    "score": 35.49515944905579,
+    "timestamp": "2025-12-09 00:23:45"
+  },
+  {
+    "player": "Player 1",
+    "song": "wetthebed.mp4",
+    "score": 35.39198458194733,
+    "timestamp": "2025-12-08 17:07:33"
+  },
+  {
+    "player": "Player 1",
+    "song": "undertheinfluence.mp4",
+    "score": 35.012416690588,
+    "timestamp": "2025-12-07 23:01:56"
+  },
+  {
+    "player": "Player 1",
+    "song": "oneofthegirls.mp4",
+    "score": 34.65827986598015,
+    "timestamp": "2025-12-08 00:18:19"
+  },
+  {
+    "player": "Player 1",
+    "song": "miniskirt.mp4",
+    "score": 33.61287171641985,
+    "timestamp": "2025-12-09 00:21:44"
+  },
+  {
+    "player": "v",
+    "song": "cheapthrills.mp4",
+    "score": 33.42813737690449,
+    "timestamp": "2025-11-21 23:04:10"
+  },
+  {
+    "player": "Bam",
+    "song": "cheapthrills_fast.mp4",
+    "score": 33.07911679148674,
+    "timestamp": "2025-11-21 19:30:01"
+  },
+  {
+    "player": "Player 1",
+    "song": "layitdown.mp4",
+    "score": 32.800649708757796,
+    "timestamp": "2025-12-08 23:11:00"
+  },
+  {
+    "player": "Player 1",
+    "song": "layitdown1.mp4",
+    "score": 31.685412116348743,
+    "timestamp": "2025-12-08 23:13:27"
+  },
+  {
+    "player": "Player 1",
+    "song": "layitdown.mp4",
+    "score": 30.427746490264933,
+    "timestamp": "2025-12-08 23:07:27"
+  },
+  {
+    "player": "Player 1",
+    "song": "undertheinfluence.mp4",
+    "score": 30.153798783818882,
+    "timestamp": "2025-12-07 18:28:38"
+  },
+  {
+    "player": "Player 1",
+    "song": "layitdown1.mp4",
+    "score": 30.09236415227254,
+    "timestamp": "2025-12-08 17:05:47"
+  },
+  {
+    "player": "Player 1",
+    "song": "layitdown.mp4",
+    "score": 29.14246862133344,
+    "timestamp": "2025-12-09 02:33:57"
+  },
+  {
+    "player": "Player 1",
+    "song": "miniskirt.mp4",
+    "score": 28.363455856839817,
+    "timestamp": "2025-12-09 00:24:26"
+  },
+  {
+    "player": "Player 1",
+    "song": "layitdown.mp4",
+    "score": 28.134824397663277,
+    "timestamp": "2025-12-08 23:23:43"
+  },
+  {
+    "player": "Player 1",
+    "song": "layitdown1.mp4",
+    "score": 27.807113031546276,
+    "timestamp": "2025-12-08 23:22:50"
+  },
+  {
+    "player": "Player 2 (P2)",
+    "song": "undertheinfluence.mp4",
+    "score": 26.46876363782212,
+    "timestamp": "2025-12-09 01:46:47"
+  },
+  {
+    "player": "Player 1",
+    "song": "layitdown.mp4",
+    "score": 25.98368996133407,
+    "timestamp": "2025-12-08 23:26:23"
+  },
+  {
+    "player": "Player 1",
+    "song": "cheapthrills.mp4",
+    "score": 25.981510430574417,
+    "timestamp": "2025-12-09 19:46:47"
+  },
+  {
+    "player": "Player 1",
+    "song": "undertheinfluence.mp4",
+    "score": 25.660510590920847,
+    "timestamp": "2025-12-08 23:50:33"
+  },
+  {
+    "player": "Player 2 (P2)",
+    "song": "undertheinfluence.mp4",
+    "score": 25.607754836479824,
+    "timestamp": "2025-12-09 01:29:44"
+  },
+  {
+    "player": "Player 1",
+    "song": "layitdown.mp4",
+    "score": 25.581571053092677,
+    "timestamp": "2025-12-08 23:05:17"
+  },
+  {
+    "player": "Player 1",
+    "song": "miniskirt.mp4",
+    "score": 25.252994711821277,
+    "timestamp": "2025-12-09 00:25:37"
+  },
+  {
+    "player": "Player 1",
+    "song": "cheapthrills.mp4",
+    "score": 25.23463238030672,
+    "timestamp": "2025-12-09 17:29:02"
+  },
+  {
+    "player": "Player 1",
+    "song": "miniskirt.mp4",
+    "score": 24.975240727265675,
+    "timestamp": "2025-12-09 00:09:57"
+  },
+  {
+    "player": "Player 1",
+    "song": "layitdown.mp4",
+    "score": 24.622802960220724,
+    "timestamp": "2025-12-08 23:22:04"
+  },
+  {
+    "player": "Player 1",
+    "song": "letmeloveyou.mp4",
+    "score": 24.322124297420185,
+    "timestamp": "2025-12-09 00:44:10"
+  },
+  {
+    "player": "Player 1",
+    "song": "layitdown.mp4",
+    "score": 24.183471330131095,
+    "timestamp": "2025-12-08 23:09:57"
+  },
+  {
+    "player": "Player 1",
+    "song": "letmeloveyou.mp4",
+    "score": 24.072894199440878,
+    "timestamp": "2025-12-09 00:43:26"
+  },
+  {
+    "player": "Player 1",
+    "song": "miniskirt.mp4",
+    "score": 23.74831252420942,
+    "timestamp": "2025-12-09 00:01:26"
+  },
+  {
+    "player": "Player 1",
+    "song": "oneofthegirls.mp4",
+    "score": 23.602905459702015,
+    "timestamp": "2025-12-07 22:52:22"
+  },
+  {
+    "player": "Player 1",
+    "song": "wetthebed.mp4",
+    "score": 23.302990533411503,
+    "timestamp": "2025-12-09 00:42:46"
+  },
+  {
+    "player": "Player 1",
+    "song": "layitdown.mp4",
+    "score": 23.19046251475811,
+    "timestamp": "2025-12-08 22:10:35"
+  },
+  {
+    "player": "Player 1",
+    "song": "layitdown.mp4",
+    "score": 23.16610403669377,
+    "timestamp": "2025-12-08 23:33:05"
+  },
+  {
+    "player": "Player 1",
+    "song": "miniskirt.mp4",
+    "score": 22.86016362408797,
+    "timestamp": "2025-12-09 00:08:50"
+  },
+  {
+    "player": "Player 1",
+    "song": "undertheinfluence.mp4",
+    "score": 22.835338649650414,
+    "timestamp": "2025-12-08 23:58:47"
+  },
+  {
+    "player": "Player 1",
+    "song": "cheapthrills.mp4",
+    "score": 22.740833807426196,
+    "timestamp": "2025-12-09 19:41:51"
+  },
+  {
+    "player": "Player 1",
+    "song": "undertheinfluence.mp4",
+    "score": 21.704673518737156,
+    "timestamp": "2025-12-08 15:05:55"
+  },
+  {
+    "player": "Player 1",
+    "song": "layitdown.mp4",
+    "score": 20.43018133379519,
+    "timestamp": "2025-12-09 00:34:32"
+  },
+  {
+    "player": "Player 1",
+    "song": "wetthebed.mp4",
+    "score": 20.165373682878755,
+    "timestamp": "2025-12-09 00:29:32"
+  },
+  {
+    "player": "Player 1",
+    "song": "miniskirt.mp4",
+    "score": 20.041165581593912,
+    "timestamp": "2025-12-09 00:26:17"
+  },
+  {
+    "player": "Player 1",
+    "song": "callmemaybe.mp4",
+    "score": 19.957654427271336,
+    "timestamp": "2025-11-24 20:05:09"
+  },
+  {
+    "player": "Player 1",
+    "song": "cheapthrills.mp4",
+    "score": 19.86331542643408,
+    "timestamp": "2025-12-09 19:42:51"
+  },
+  {
+    "player": "Player 1",
+    "song": "swimmingpool.mp4",
+    "score": 19.680104578534763,
+    "timestamp": "2025-12-09 00:58:15"
+  },
+  {
+    "player": "Player 1",
+    "song": "cheapthrills.mp4",
+    "score": 19.33542689929406,
+    "timestamp": "2025-12-16 23:01:39"
+  },
+  {
+    "player": "Player 1",
+    "song": "letmeloveyou.mp4",
+    "score": 19.315467616543174,
+    "timestamp": "2025-12-09 00:36:07"
+  },
+  {
+    "player": "Player 1",
+    "song": "cheapthrills.mp4",
+    "score": 19.272956112399697,
+    "timestamp": "2025-12-12 13:56:29"
+  },
+  {
+    "player": "Player 1",
+    "song": "miniskirt.mp4",
+    "score": 18.668321340034407,
+    "timestamp": "2025-12-09 00:19:31"
+  },
+  {
+    "player": "Player 1",
+    "song": "swimmingpool.mp4",
+    "score": 18.38035437744111,
+    "timestamp": "2025-12-09 01:02:08"
+  },
+  {
+    "player": "Player 1",
+    "song": "layitdown.mp4",
+    "score": 18.296509040519595,
+    "timestamp": "2025-12-08 23:45:19"
+  },
+  {
+    "player": "Player 1",
+    "song": "cheapthrills.mp4",
+    "score": 17.971946271136403,
+    "timestamp": "2025-12-12 21:24:30"
+  },
+  {
+    "player": "bam",
+    "song": "cheapthrills.mp4",
+    "score": 17.52002784051001,
+    "timestamp": "2025-11-19 11:00:48"
+  },
+  {
+    "player": "Player 1",
+    "song": "oneofthegirls.mp4",
+    "score": 17.339886501431465,
+    "timestamp": "2025-12-07 22:34:43"
+  },
+  {
+    "player": "bam",
+    "song": "callmemaybe.mp4",
+    "score": 17.198885514517315,
+    "timestamp": "2025-11-21 20:10:13"
+  },
+  {
+    "player": "Player 1",
+    "song": "undertheinfluence.mp4",
+    "score": 17.06354678918918,
+    "timestamp": "2025-12-07 22:06:44"
+  },
+  {
+    "player": "Player 1",
+    "song": "cheapthrills.mp4",
+    "score": 16.4029923081398,
+    "timestamp": "2025-12-09 18:11:35"
+  },
+  {
+    "player": "Player 1",
+    "song": "cheapthrills.mp4",
+    "score": 16.203271178528666,
+    "timestamp": "2025-12-09 16:59:35"
+  },
+  {
+    "player": "Player 1",
+    "song": "cheapthrills.mp4",
+    "score": 16.194806694984436,
+    "timestamp": "2025-12-16 23:06:09"
+  },
+  {
+    "player": "Player 1",
+    "song": "oneofthegirls.mp4",
+    "score": 16.09412632882595,
+    "timestamp": "2025-12-07 22:59:39"
+  },
+  {
+    "player": "m",
+    "song": "undertheinfluence.mp4",
+    "score": 15.38035960868001,
+    "timestamp": "2025-12-07 22:20:27"
+  },
+  {
+    "player": "Player 1",
+    "song": "undertheinfluence.mp4",
+    "score": 14.877324706564346,
+    "timestamp": "2025-12-07 22:30:42"
+  },
+  {
+    "player": "Player 1",
+    "song": "callmemaybe.mp4",
+    "score": 13.538791500031948,
+    "timestamp": "2025-11-24 20:26:44"
+  },
+  {
+    "player": "bam",
+    "song": "dontstartnow.mp4",
+    "score": 13.416592055000365,
+    "timestamp": "2025-11-19 11:19:07"
+  },
+  {
+    "player": "l",
+    "song": "callmemaybe.mp4",
+    "score": 10.847497060894966,
+    "timestamp": "2025-11-24 21:33:13"
+  },
+  {
+    "player": "Player 1",
+    "song": "miniskirt.mp4",
+    "score": 0.0,
+    "timestamp": "2025-12-08 14:24:32"
+  },
+  {
+    "player": "Player 1 (P1)",
+    "song": "undertheinfluence.mp4",
+    "score": 0.0,
+    "timestamp": "2025-12-09 01:37:53"
+  },
+  {
+    "player": "Player 2 (P2)",
+    "song": "undertheinfluence.mp4",
+    "score": 0.0,
+    "timestamp": "2025-12-09 01:37:53"
+  },
+  {
+    "player": "Player 1 (P1)",
+    "song": "undertheinfluence.mp4",
+    "score": 0.0,
+    "timestamp": "2025-12-09 01:51:51"
+  },
+  {
+    "player": "Player 2 (P2)",
+    "song": "undertheinfluence.mp4",
+    "score": 0.0,
+    "timestamp": "2025-12-09 01:51:51"
+  },
+  {
+    "player": "Player 1 (P1)",
+    "song": "undertheinfluence.mp4",
+    "score": 0.0,
+    "timestamp": "2025-12-09 02:33:03"
+  },
+  {
+    "player": "Player 2 (P2)",
+    "song": "undertheinfluence.mp4",
+    "score": 0.0,
+    "timestamp": "2025-12-09 02:33:03"
+  },
+  {
+    "player": "Player 1",
+    "song": "cheapthrills.mp4",
+    "score": 0.0,
+    "timestamp": "2025-12-16 22:57:11"
+  }
+]
